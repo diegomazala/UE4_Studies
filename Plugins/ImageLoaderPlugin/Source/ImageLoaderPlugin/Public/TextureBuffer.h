@@ -15,7 +15,8 @@ enum class ETextureBufferStatus : uint8
 
 class UTexture2D;
 
-UCLASS(Blueprintable, BlueprintType)
+
+UCLASS(Blueprintable, BlueprintType, ClassGroup = (ImageLoader), meta = (BlueprintSpawnableComponent))
 class IMAGELOADERPLUGIN_API UTextureBuffer : public UObject
 {
 	GENERATED_BODY()
@@ -25,53 +26,43 @@ public:
 	UTextureBuffer(const FObjectInitializer& ObjectInitializer);
 	virtual ~UTextureBuffer();
 
-	UFUNCTION(BlueprintCallable, Category = "Image Loader") 
+	UFUNCTION(BlueprintCallable, Category = TextureBuffer) 
 	bool IsLoading() const;
 	
-	UFUNCTION(BlueprintCallable, Category = "Image Loader")
+	UFUNCTION(BlueprintCallable, Category = TextureBuffer)
 	bool IsFinished() const;
 
-	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Image Loader")
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = TextureBuffer)
 	float GetTimeSinceLastUpdate();
 
-	UFUNCTION(BlueprintCallable, Category = "Image Loader")
+	UFUNCTION(BlueprintCallable, Category = TextureBuffer)
 	void Update(float DeltaTime);
 
-	UFUNCTION(BlueprintCallable, Category = "Image Loader")
+	UFUNCTION(BlueprintCallable, Category = TextureBuffer)
 	UTexture2D* GetTexture();
 
-	UFUNCTION(BlueprintCallable, Category = "Image Loader")
+	UFUNCTION(BlueprintCallable, Category = TextureBuffer)
 	UTexture2D* GetPrevTexture();
 
-	UFUNCTION(BlueprintCallable, Category = "Image Loader")
+	UFUNCTION(BlueprintCallable, Category = TextureBuffer)
 	UTexture2D* GetNextTexture();
 
-	UFUNCTION(BlueprintCallable, Category = "Image Loader")
+	UFUNCTION(BlueprintCallable, Category = TextureBuffer)
 	UTexture2D* GetFallbackTexture();
 
-	UFUNCTION(BlueprintCallable, Category = "Image Loader")
+	UFUNCTION(BlueprintCallable, Category = TextureBuffer)
 	int32 MoveNext();
 
-	UFUNCTION(BlueprintCallable, Category = "Image Loader")
+	UFUNCTION(BlueprintCallable, Category = TextureBuffer)
 	bool IsEmpty() const;
 
-	UFUNCTION(BlueprintCallable, Category = "Image Loader")
-	bool IsPaused() const;
-	
-	UFUNCTION(BlueprintCallable, Category = "Image Loader")
-	void Pause();
+	UFUNCTION(BlueprintCallable, Category = TextureBuffer)
+	void GoToBegin();
 
-	UFUNCTION(BlueprintCallable, Category = "Image Loader")
-	void Resume();
-
-	UFUNCTION(BlueprintCallable, Category = "Image Loader")
-	void Play();
-
-
-	UFUNCTION(BlueprintCallable, Category = "Image Loader")
+	UFUNCTION(BlueprintCallable, Category = TextureBuffer)
 	bool LoadImageSequence();
 
-	UFUNCTION(BlueprintCallable, Category = "Image Loader")
+	UFUNCTION(BlueprintCallable, Category = TextureBuffer)
 	void ReleaseBuffer();
 
 	UPROPERTY(BlueprintReadWrite)
@@ -121,7 +112,6 @@ private:
 
 	double LastUpdateTime = 0.0;
 	bool Reverse = false;
-	bool IsPlaying = false;
 
     UPROPERTY(BlueprintAssignable, Category = ImageLoader, meta = (AllowPrivateAccess = true))
     FOnImageSequenceLoadCompleted ImageSequenceLoadCompleted;

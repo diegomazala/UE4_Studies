@@ -70,6 +70,12 @@ void UImageLoaderManager::ReleaseAllBuffers()
 
 UTextureBuffer* UImageLoaderManager::LoadImageSequence(UObject* Outer, const FString& Path, bool PingPong, float FrameIntervalInSec, int32 MaxImagesCount, int32 TemporalResolution)
 {
+	if (Path.IsEmpty())
+	{
+		UE_LOG(LogTemp, Error, TEXT("ImageLoaderManager: File list path is null"));
+		return nullptr;
+	}
+
 	if (!FPaths::FileExists(Path) && !FPaths::DirectoryExists(Path))
 	{
 		UE_LOG(LogTemp, Error, TEXT("ImageLoaderManager: File list or directory does not exist: %s"), *Path);

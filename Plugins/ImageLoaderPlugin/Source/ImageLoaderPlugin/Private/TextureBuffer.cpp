@@ -52,33 +52,15 @@ void UTextureBuffer::Update(float DeltaTime)
 	
 }
 
-void UTextureBuffer::Play()
+void UTextureBuffer::GoToBegin()
 {
 	UpdateIndex = (!Reverse) ? 0 : TexBuffer.Num() - 1;
-	IsPlaying = true;
 }
 
-void UTextureBuffer::Resume()
-{
-	IsPlaying = true;
-}
-
-void UTextureBuffer::Pause()
-{
-	IsPlaying = false;
-}
-
-bool UTextureBuffer::IsPaused() const
-{
-	return !IsPlaying;
-}
 
 
 int32 UTextureBuffer::MoveNext()
 {
-	if (IsPaused())
-		return UpdateIndex;
-
 	if (!PingPong)
 	{
 		++UpdateIndex;
@@ -231,13 +213,11 @@ void UTextureBuffer::OnImageLoadCompleted(UTexture2D* Texture, int32 Id)
 	{
 		UpdateIndex = 0;
 		
-        UE_LOG(LogTemp, Warning, TEXT(">>>>>>>> %d %d UTextureBuffer::LoadImageSequence: <Completed> : %s"), FileList.Num(), LoadingCount, *GetName());
+        //UE_LOG(LogTemp, Warning, TEXT(">>>>>>>> %d %d UTextureBuffer::LoadImageSequence: <Completed> : %s"), FileList.Num(), LoadingCount, *GetName());
 		UImageLoaderManager::GetImageLoaderManager()->OnImageSequenceLoadComplete(FileList.Num(), SequenceName);
 
 		Status = ETextureBufferStatus::E_Loaded;
 		ImageSequenceLoadCompleted.Broadcast(TexBuffer.Num(), FName(*this->GetName()));
-
-		IsPlaying = true;
 	}
 }
 
@@ -246,7 +226,7 @@ void UTextureBuffer::OnImageLoadCompleted(UTexture2D* Texture, int32 Id)
 
 void UTextureBuffer::ReleaseBuffer()
 {
-	UE_LOG(LogTemp, Warning, TEXT("UTextureBuffer::ReleaseBuffer: %d %d %s"), FileList.Num(), LoadingCount, *GetName());
+	//UE_LOG(LogTemp, Warning, TEXT("UTextureBuffer::ReleaseBuffer: %d %d %s"), FileList.Num(), LoadingCount, *GetName());
     FallbackTexture = GetTexture();
 	TexBuffer.Empty();
 	Status = ETextureBufferStatus::E_Unloaded;
