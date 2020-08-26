@@ -24,6 +24,13 @@ enum TextureType {
     TextureCubemap
 };
 
+enum Format
+{
+    DXT1 = 0x83F1,
+    DXT3 = 0x83F2,
+    DXT5 = 0x83F3
+};
+
 #ifdef NV_DDS_NO_GL_SUPPORT
     #define GL_RGB                            0x1907
     #define GL_RGBA                           0x1908
@@ -208,6 +215,9 @@ public:
     }
     unsigned int get_format() {
         return m_format;
+    }
+    Format get_format_dxt() {
+        return (Format)m_format;
     }
     TextureType get_type() {
         return m_type;

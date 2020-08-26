@@ -29,7 +29,7 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	UFUNCTION(BlueprintCallable, Category = TextureBufferPlayer)
-	void LoadImageSequenceFromDisk();
+	bool LoadImageSequenceFromDisk();
 
 	UFUNCTION()
 	void OnImageSequenceLoadInProgress(int32 Count, FName SequenceName);
@@ -50,28 +50,28 @@ public:
 	void Resume();
 
 
-	UPROPERTY(EditAnywhere, Category = TextureBufferPlayer)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = TextureBufferPlayer)
 	UMaterialInterface* TemplateMaterial = nullptr;
 
-	UPROPERTY(EditAnywhere, Category = TextureBufferPlayer)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = TextureBufferPlayer)
 	FString FileListPath;
 
-	UPROPERTY(EditAnywhere, Category = TextureBufferPlayer)
-	bool LoadOnStart = true;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = TextureBufferPlayer)
+	bool LoadOnStart = false;
 
-	UPROPERTY(EditAnywhere, Category = TextureBufferPlayer)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = TextureBufferPlayer)
 	bool PingPong = true;
 
-	UPROPERTY(EditAnywhere, Category = TextureBufferPlayer)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = TextureBufferPlayer)
 	float FrameIntervalInSeconds = 0.03f;
 
-	UPROPERTY(EditAnywhere, Category = TextureBufferPlayer)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = TextureBufferPlayer)
 	int32 TemporalResolution = 1;
 
-	UPROPERTY(EditAnywhere, Category = TextureBufferPlayer)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = TextureBufferPlayer)
 	int32 MaxImages = 0;
 
-	UPROPERTY(EditAnywhere, Category = TextureBufferPlayer)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = TextureBufferPlayer)
 	bool TryToApplyMaterialToMesh = true;
 
 private:

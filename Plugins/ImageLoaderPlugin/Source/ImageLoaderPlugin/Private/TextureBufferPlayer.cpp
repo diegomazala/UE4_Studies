@@ -48,14 +48,16 @@ void UTextureBufferPlayer::TickComponent(float DeltaTime, ELevelTick TickType, F
 }
 
 
-void UTextureBufferPlayer::LoadImageSequenceFromDisk()
+bool UTextureBufferPlayer::LoadImageSequenceFromDisk()
 {
 	TextureBuffer = UImageLoaderManager::GetImageLoaderManager()->LoadImageSequence(this, FileListPath, PingPong, FrameIntervalInSeconds, MaxImages, TemporalResolution);
 	if (TextureBuffer)
 	{
 		TextureBuffer->OnImageSequenceLoadInProgress().AddDynamic(this, &UTextureBufferPlayer::OnImageSequenceLoadInProgress);
 		TextureBuffer->OnImageSequenceLoadCompleted().AddDynamic(this, &UTextureBufferPlayer::OnImageSequenceLoadCompleted);
+		return true;
 	}
+	return false;
 }
 
 void UTextureBufferPlayer::OnImageSequenceLoadInProgress(int32 Count, FName SequenceName)

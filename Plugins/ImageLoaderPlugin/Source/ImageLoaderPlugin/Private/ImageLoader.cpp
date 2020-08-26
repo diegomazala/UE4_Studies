@@ -157,6 +157,13 @@ UTexture2D* UImageLoader::LoadDDSFromDisk(UObject* Outer, const FString& ImagePa
 	try
 	{
 		image.load(TCHAR_TO_UTF8(*ImagePath), flip_image);
+
+		if (image.get_format_dxt() != nv_dds::DXT1 && image.get_format_dxt() != nv_dds::DXT5)
+		{
+			UE_LOG(LogTemp, Error, TEXT("%Unsupported DXT format: %s"), *ImagePath);
+			return nullptr;
+		}
+
 	}
 	catch (const std::exception& ex)
 	{
@@ -180,7 +187,7 @@ UTexture2D* UImageLoader::LoadDDSFromDisk(UObject* Outer, const FString& ImagePa
 		NewTexture->PlatformData = new FTexturePlatformData();
 		NewTexture->PlatformData->SizeX = SizeX;
 		NewTexture->PlatformData->SizeY = SizeY;
-		NewTexture->PlatformData->PixelFormat = EPixelFormat::PF_DXT5;
+		NewTexture->PlatformData->PixelFormat = (image.get_format_dxt() == nv_dds::DXT5) ? EPixelFormat::PF_DXT5 : EPixelFormat::PF_DXT1;
 
 		// Allocate first mipmap and upload the pixel data
 		int32 NumBlocksX = SizeX / BlockSizeX;
