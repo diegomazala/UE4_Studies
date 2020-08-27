@@ -213,7 +213,7 @@ void UTextureBuffer::OnImageLoadCompleted(UTexture2D* Texture, int32 Id)
 	{
 		UpdateIndex = 0;
 		
-        //UE_LOG(LogTemp, Warning, TEXT(">>>>>>>> %d %d UTextureBuffer::LoadImageSequence: <Completed> : %s"), FileList.Num(), LoadingCount, *GetName());
+        UE_LOG(LogTemp, Warning, TEXT(">> %d %d UTextureBuffer::LoadImageSequence: <Completed> : %s"), FileList.Num(), LoadingCount, *SequenceName.ToString());
 		UImageLoaderManager::GetImageLoaderManager()->OnImageSequenceLoadComplete(FileList.Num(), SequenceName);
 
 		Status = ETextureBufferStatus::E_Loaded;

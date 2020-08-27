@@ -66,10 +66,10 @@ public:
 	bool PingPong = true;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = TextureBufferPlayer)
-	float FrameIntervalInSeconds = 0.03f;
+	float FrameIntervalInSeconds = 0.0666f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = TextureBufferPlayer)
-	int32 TemporalResolution = 1;
+	int32 TemporalResolution = 2;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = TextureBufferPlayer)
 	int32 MaxImages = 0;
