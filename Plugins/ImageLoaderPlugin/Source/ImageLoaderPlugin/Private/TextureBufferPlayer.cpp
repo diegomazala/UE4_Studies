@@ -110,9 +110,9 @@ bool UTextureBufferPlayer::UpdateMaterial()
 
 	float lerpAlpha = FMath::Clamp(TextureBuffer->GetTimeSinceLastUpdate() / this->FrameIntervalInSeconds, 0.0f, 1.0f);
 
-	MainMaterial->SetTextureParameterValue("MainTexture", MainTexture);
-	MainMaterial->SetTextureParameterValue("PrevTexture", PrevTexture);
-	MainMaterial->SetScalarParameterValue("LerpAlpha", lerpAlpha);
+	MainMaterial->SetTextureParameterValue(MainTextureName, MainTexture);
+	MainMaterial->SetTextureParameterValue(PrevTextureName, PrevTexture);
+	MainMaterial->SetScalarParameterValue(LerpAlphaName, lerpAlpha);
 	return true;
 }
 

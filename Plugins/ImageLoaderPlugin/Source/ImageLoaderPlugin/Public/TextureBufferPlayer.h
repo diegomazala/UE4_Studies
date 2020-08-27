@@ -55,9 +55,6 @@ public:
 
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = TextureBufferPlayer)
-	UMaterialInterface* TemplateMaterial = nullptr;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = TextureBufferPlayer)
 	FString FileListPath;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = TextureBufferPlayer)
@@ -78,8 +75,33 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = TextureBufferPlayer)
 	int32 MaxImages = 0;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = TextureBufferPlayer)
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Material Settings")
+	UMaterialInterface* TemplateMaterial = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Material Settings")
 	bool TryToApplyMaterialToMesh = true;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Material")
+	FName MainTextureName = FName(TEXT("MainTexture"));
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Material")
+	FName PrevTextureName = FName(TEXT("PrevTexture"));
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Material")
+	FName LerpAlphaName = FName(TEXT("LerpAlpha"));
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Material Settings")
+	UMaterialInstanceDynamic* MainMaterial = nullptr;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Material Settings")
+	UTexture2D* MainTexture = nullptr;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Material Settings")
+	UTexture2D* PrevTexture = nullptr;
+
+	UPROPERTY(BlueprintReadWrite, Category = "Material Settings")
+	UTextureBuffer* TextureBuffer = nullptr;
 
 private:
 
@@ -87,11 +109,6 @@ private:
 	bool UpdateMaterial();
 	bool UpdateTextures();
 
-
-	UTextureBuffer*				TextureBuffer = nullptr;
-	UMaterialInstanceDynamic*	MainMaterial = nullptr;
-	UTexture2D*					MainTexture = nullptr;
-	UTexture2D*					PrevTexture = nullptr;
 	bool						IsPlaying = false;
 
 };
