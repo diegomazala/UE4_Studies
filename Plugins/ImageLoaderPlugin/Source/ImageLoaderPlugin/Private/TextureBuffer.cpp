@@ -57,6 +57,14 @@ void UTextureBuffer::GoToBegin()
 	UpdateIndex = (!Reverse) ? 0 : TexBuffer.Num() - 1;
 }
 
+int32 UTextureBuffer::GetIndex() const
+{
+	return UpdateIndex;
+}
+void UTextureBuffer::SetIndex(int32 Idx)
+{
+	UpdateIndex = FMath::Clamp(Idx, 0, TexBuffer.Num() - 1);
+}
 
 
 int32 UTextureBuffer::MoveNext()

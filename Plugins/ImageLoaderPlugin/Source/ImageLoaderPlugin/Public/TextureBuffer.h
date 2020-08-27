@@ -54,6 +54,13 @@ public:
 	int32 MoveNext();
 
 	UFUNCTION(BlueprintCallable, Category = TextureBuffer)
+	int32 GetIndex() const;
+
+	UFUNCTION(BlueprintCallable, Category = TextureBuffer)
+	void SetIndex(int32 Idx);
+
+
+	UFUNCTION(BlueprintCallable, Category = TextureBuffer)
 	bool IsEmpty() const;
 
 	UFUNCTION(BlueprintCallable, Category = TextureBuffer)
