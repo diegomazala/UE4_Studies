@@ -147,6 +147,11 @@ void UTextureBufferPlayer::Resume()
 	IsPlaying = true;
 }
 
+void UTextureBufferPlayer::PauseResume()
+{
+	IsPlaying = !IsPlaying;
+}
+
 
 void UTextureBufferPlayer::Unload()
 {

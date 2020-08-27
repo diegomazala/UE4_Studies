@@ -49,6 +49,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = TextureBufferPlayer)
 	void Resume();
 
+	UFUNCTION(BlueprintCallable, Category = TextureBufferPlayer)
+	void PauseResume();
+
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = TextureBufferPlayer)
 	UMaterialInterface* TemplateMaterial = nullptr;

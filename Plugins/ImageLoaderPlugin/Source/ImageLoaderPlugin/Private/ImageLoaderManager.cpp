@@ -157,15 +157,17 @@ void UImageLoaderManager::UnloadImageSequence(const FString& Path)
 
 bool UImageLoaderManager::IsLoading() const
 {
-	return ImageLoadingQueueSize > 0;
+	return !LoaderMngr->ImageLoadingQueue.IsEmpty();
 }
 
 bool UImageLoaderManager::LoadTextureBufferImages(UTextureBuffer* TexBuffer)
 {
-	LoaderMngr->TestCount++;
 	TexBuffer->Status = ETextureBufferStatus::E_Enqueued;
 
-	for (int32 Idx = 0; Idx < TexBuffer->FileList.Num(); ++Idx)
+
+	LoaderMngr->ImageLoadingPriorityQueue.Enqueue(TPair<UTextureBuffer*, int32>(TexBuffer, 0));
+
+	for (int32 Idx = 1; Idx < TexBuffer->FileList.Num(); ++Idx)
 	{
 		LoaderMngr->ImageLoadingQueue.Enqueue(TPair<UTextureBuffer*, int32>(TexBuffer, Idx));
 	}
@@ -188,6 +190,22 @@ bool UImageLoaderManager::StartImageLoading()
 bool UImageLoaderManager::LoadImageFromQueue()
 {
 	TPair<UTextureBuffer*, int32> pair;
+
+	if (LoaderMngr->ImageLoadingPriorityQueue.Dequeue(pair))
+	{
+		UTextureBuffer* TexBuffer = pair.Key;
+		int32 Idx = pair.Value;
+
+		if (TexBuffer)
+		{
+			UImageLoader* ImageLoader = UImageLoader::LoadImageFromDiskAsync(TexBuffer, TexBuffer->FileList[Idx], Idx);
+			ImageLoader->OnLoadCompleted().AddDynamic(LoaderMngr, &UImageLoaderManager::OnImageLoadCompleted);
+			ImageLoader->OnLoadCompleted().AddDynamic(TexBuffer, &UTextureBuffer::OnImageLoadCompleted);
+			LoaderMngr->ImageLoadingQueueSize++;
+			return true;
+		}
+	}
+
 	if (LoaderMngr->ImageLoadingQueue.Dequeue(pair))
 	{
 		UTextureBuffer* TexBuffer = pair.Key;
@@ -202,6 +220,7 @@ bool UImageLoaderManager::LoadImageFromQueue()
 			return true;
 		}
 	}
+
 	return false;
 }
 
@@ -215,7 +234,6 @@ void UImageLoaderManager::OnImageLoadCompleted(UTexture2D* Texture, int32 Idx)
 
 void UImageLoaderManager::OnImageSequenceLoadComplete(int32 ImageCount, FName SequenceName)
 {
-	LoaderMngr->TestCount--;
 }
 
 

@@ -49,9 +49,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Image Loader")
 	bool IsLoading() const;
 
-	UPROPERTY(BlueprintReadWrite)
-	int32	TestCount = 0;
-	
 
 	UPROPERTY(Category = MapsAndSets, BlueprintReadWrite)
 	TMap<FName, UTextureBuffer*>		ImgTextureBufferMap;
@@ -68,6 +65,7 @@ public:
 private:
 	static UImageLoaderManager*					LoaderMngr;
 
+	TQueue<TPair<UTextureBuffer*, int32>>		ImageLoadingPriorityQueue;
 	TQueue<TPair<UTextureBuffer*, int32>>		ImageLoadingQueue;
 	int32										ImageLoadingQueueSize = 0;
 	int32										MaxNumberOfImagesLoadingParallel = 16;
