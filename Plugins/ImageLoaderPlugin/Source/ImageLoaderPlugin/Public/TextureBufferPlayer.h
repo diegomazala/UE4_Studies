@@ -23,6 +23,7 @@ public:
 protected:
 	
 	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 public:	
 	
@@ -60,7 +61,10 @@ public:
 	FString FileListPath;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = TextureBufferPlayer)
-	bool LoadOnStart = false;
+	bool LoadOnBeginPlay = true;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = TextureBufferPlayer)
+	bool UnloadOnEndPlay = true;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = TextureBufferPlayer)
 	bool PingPong = true;

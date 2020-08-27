@@ -26,20 +26,9 @@ UImageLoaderManager* UImageLoaderManager::GetImageLoaderManager()
 }
 
 
-void UImageLoaderManager::Initialize()
-{
-	if (LoaderMngr->IsInitialized)
-	{
-		UImageLoaderManager::Uninitialize();
-	}
-
-	LoaderMngr->IsInitialized = true;
-	LoaderMngr->ImageLoadingQueueSize = 0;
-}
 
 
-
-void UImageLoaderManager::Uninitialize()
+void UImageLoaderManager::Release()
 {
 	for (auto& Elem : LoaderMngr->ImgTextureBufferMap)
 	{
@@ -52,19 +41,11 @@ void UImageLoaderManager::Uninitialize()
 	}
 	LoaderMngr->ImgTextureBufferMap.Empty();
 	LoaderMngr->ImageLoadingQueueSize = 0;
-	LoaderMngr->IsInitialized = false;
+	LoaderMngr->ImagePreLoadingQueueSize = 0;
+	LoaderMngr->ImageLoadingPriorityQueue.Empty();
+	LoaderMngr->ImageLoadingQueue.Empty();
 }
 
-
-void UImageLoaderManager::ReleaseAllBuffers()
-{
-	for (auto& Elem : LoaderMngr->ImgTextureBufferMap)
-	{
-		UTextureBuffer*&ImgSeq = Elem.Value;
-		if (ImgSeq)
-			ImgSeq->ReleaseBuffer();
-	}
-}
 
 
 
@@ -142,17 +123,28 @@ UTextureBuffer* UImageLoaderManager::LoadImageSequence(UObject* Outer, const FSt
 	}
 }
 
-void UImageLoaderManager::UnloadImageSequence(const FString& Path)
+bool UImageLoaderManager::UnloadImageSequence(const FString& Path)
 {
 	FName SequenceName = FName(*FPaths::GetPathLeaf(Path));
 
 	if (LoaderMngr->ImgTextureBufferMap.Contains(SequenceName))
 	{
 		UTextureBuffer*& TexBuffer = LoaderMngr->ImgTextureBufferMap[SequenceName];
-		LoaderMngr->ImgTextureBufferMap.Remove(SequenceName);
-        TexBuffer->ReleaseBuffer();
-		TexBuffer = nullptr;
+
+		if (!TexBuffer->IsLoading())
+		{
+			LoaderMngr->ImgTextureBufferMap.Remove(SequenceName);
+			TexBuffer->ReleaseBuffer();
+			TexBuffer = nullptr;
+			return true;
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("UImageLoaderManager::UnloadImageSequence Cannot unload because it is still loading images %s"), *TexBuffer->SequenceName.ToString());
+			return false;
+		}
 	}
+	return false;
 }
 
 bool UImageLoaderManager::IsLoading() const
@@ -166,10 +158,12 @@ bool UImageLoaderManager::LoadTextureBufferImages(UTextureBuffer* TexBuffer)
 
 
 	LoaderMngr->ImageLoadingPriorityQueue.Enqueue(TPair<UTextureBuffer*, int32>(TexBuffer, 0));
+	LoaderMngr->ImagePreLoadingQueueSize++;
 
 	for (int32 Idx = 1; Idx < TexBuffer->FileList.Num(); ++Idx)
 	{
 		LoaderMngr->ImageLoadingQueue.Enqueue(TPair<UTextureBuffer*, int32>(TexBuffer, Idx));
+		LoaderMngr->ImagePreLoadingQueueSize++;
 	}
 
 	StartImageLoading();
@@ -183,6 +177,7 @@ bool UImageLoaderManager::StartImageLoading()
 	bool success = true;
 	for (auto i = LoaderMngr->ImageLoadingQueueSize; i < LoaderMngr->MaxNumberOfImagesLoadingParallel; ++i)
 		success = success && LoadImageFromQueue();
+
 	return success;
 }
 
@@ -193,6 +188,30 @@ bool UImageLoaderManager::LoadImageFromQueue()
 
 	if (LoaderMngr->ImageLoadingPriorityQueue.Dequeue(pair))
 	{
+		LoaderMngr->ImagePreLoadingQueueSize--;
+
+		UTextureBuffer* TexBuffer = pair.Key;
+		int32 Idx = pair.Value;
+
+		if (TexBuffer)
+		{
+			UImageLoader* ImageLoader = UImageLoader::LoadImageFromDiskAsync(TexBuffer, TexBuffer->FileList[Idx], Idx);
+			ImageLoader->OnLoadCompleted().AddDynamic(LoaderMngr, &UImageLoaderManager::OnImageLoadCompleted);
+			ImageLoader->OnLoadCompleted().AddDynamic(TexBuffer, &UTextureBuffer::OnImageLoadCompleted);
+			LoaderMngr->ImageLoadingQueueSize++;
+			
+			return true;
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("UImageLoaderManager::LoadImageFromQueue: Invalid buffer"));
+		}
+	}
+
+	if (LoaderMngr->ImageLoadingQueue.Dequeue(pair))
+	{
+		LoaderMngr->ImagePreLoadingQueueSize--; 
+
 		UTextureBuffer* TexBuffer = pair.Key;
 		int32 Idx = pair.Value;
 
@@ -204,20 +223,9 @@ bool UImageLoaderManager::LoadImageFromQueue()
 			LoaderMngr->ImageLoadingQueueSize++;
 			return true;
 		}
-	}
-
-	if (LoaderMngr->ImageLoadingQueue.Dequeue(pair))
-	{
-		UTextureBuffer* TexBuffer = pair.Key;
-		int32 Idx = pair.Value;
-
-		if (TexBuffer)
+		else
 		{
-			UImageLoader* ImageLoader = UImageLoader::LoadImageFromDiskAsync(TexBuffer, TexBuffer->FileList[Idx], Idx);
-			ImageLoader->OnLoadCompleted().AddDynamic(LoaderMngr, &UImageLoaderManager::OnImageLoadCompleted);
-			ImageLoader->OnLoadCompleted().AddDynamic(TexBuffer, &UTextureBuffer::OnImageLoadCompleted);
-			LoaderMngr->ImageLoadingQueueSize++;
-			return true;
+			UE_LOG(LogTemp, Error, TEXT("UImageLoaderManager::LoadImageFromQueue: Invalid buffer"));
 		}
 	}
 

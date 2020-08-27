@@ -27,10 +27,15 @@ void UTextureBufferPlayer::BeginPlay()
 	if (!SetupMaterial())
 		return;
 	
-	if (LoadOnStart)
+	if (LoadOnBeginPlay)
 		LoadImageSequenceFromDisk();
 }
 
+void UTextureBufferPlayer::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	if (!UnloadOnEndPlay)
+		Unload();
+}
 
 
 void UTextureBufferPlayer::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -155,5 +160,6 @@ void UTextureBufferPlayer::PauseResume()
 
 void UTextureBufferPlayer::Unload()
 {
-	UImageLoaderManager::GetImageLoaderManager()->UnloadImageSequence(FileListPath);
+	if (UImageLoaderManager::GetImageLoaderManager()->UnloadImageSequence(FileListPath))
+		TextureBuffer = nullptr;
 }

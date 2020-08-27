@@ -19,19 +19,13 @@ public:
 	static UImageLoaderManager* GetImageLoaderManager();
 
 	UFUNCTION(BlueprintCallable, Category = "Image Loader")
-	static void Initialize();
-
-	UFUNCTION(BlueprintCallable, Category = "Image Loader")
-	static void Uninitialize();
-
-	UFUNCTION(BlueprintCallable, Category = "Image Loader")
-	static void ReleaseAllBuffers();
+	static void Release();
 
 	UFUNCTION(BlueprintCallable, Category = "Image Loader")
     static UTextureBuffer* LoadImageSequence(UObject* Outer, const FString& Path, bool PingPong = true, float FrameIntervalInSec = 0.033f, int32 MaxImagesCount = 0, int32 TemporalResolution = 1);
 	
 	UFUNCTION(BlueprintCallable, Category = "Image Loader")
-	static void UnloadImageSequence(const FString& Path);
+	static bool UnloadImageSequence(const FString& Path);
 
 	UFUNCTION(BlueprintCallable, Category = "Image Loader")
 	static UTexture2D* GetTexture(const FName& Path);
@@ -62,14 +56,16 @@ public:
 		return ImageSequenceLoadCompleted;
 	}
 
+
 private:
 	static UImageLoaderManager*					LoaderMngr;
-
+			
 	TQueue<TPair<UTextureBuffer*, int32>>		ImageLoadingPriorityQueue;
 	TQueue<TPair<UTextureBuffer*, int32>>		ImageLoadingQueue;
 	int32										ImageLoadingQueueSize = 0;
-	int32										MaxNumberOfImagesLoadingParallel = 16;
-	
+	int32										ImagePreLoadingQueueSize = 0;
+	int32										MaxNumberOfImagesLoadingParallel = 8;
+
 	bool										IsInitialized = false;
 
 	UPROPERTY(BlueprintAssignable, Category = ImageLoader, meta = (AllowPrivateAccess = true))
