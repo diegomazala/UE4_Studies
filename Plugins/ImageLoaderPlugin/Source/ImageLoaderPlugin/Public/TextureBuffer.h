@@ -118,6 +118,7 @@ private:
 	int32 UpdateIndex = 0;
 
 	double LastUpdateTime = 0.0;
+	double TimeAccum = 0.0;
 	bool Reverse = false;
 
     UPROPERTY(BlueprintAssignable, Category = ImageLoader, meta = (AllowPrivateAccess = true))
