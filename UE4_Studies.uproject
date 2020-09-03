@@ -16,9 +16,15 @@
 			"Name": "TemplateModule",
 			"Type": "Runtime",
 			"LoadingPhase": "Default",
-            "AdditionalDependencies": [
-                "Engine"
-            ]
+			"AdditionalDependencies": [
+				"Engine"
+			]
+		}
+	],
+	"Plugins": [
+		{
+			"Name": "PanoramicCapture",
+			"Enabled": true
 		}
 	]
 }

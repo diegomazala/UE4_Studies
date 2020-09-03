@@ -34,16 +34,19 @@ float UTextureBuffer::GetTimeSinceLastUpdate()
 
 void UTextureBuffer::Update(float DeltaTime)
 {
+	TimeAccum += DeltaTime;
 	//
 	// Check if it's time interval minimum for update
 	//
     {
-        double TimeDiff = FPlatformTime::Seconds() - LastUpdateTime;
+        //double TimeDiff = FPlatformTime::Seconds() - LastUpdateTime;
+		double TimeDiff = TimeAccum - LastUpdateTime;
         if (TimeDiff < FrameIntervalInSec)
         {
             return;
         }
-        LastUpdateTime = FPlatformTime::Seconds();
+        //LastUpdateTime = FPlatformTime::Seconds();
+		LastUpdateTime = TimeAccum;
     }
 
 	MoveNext();
@@ -226,6 +229,8 @@ void UTextureBuffer::OnImageLoadCompleted(UTexture2D* Texture, int32 Id)
 
 		Status = ETextureBufferStatus::E_Loaded;
 		ImageSequenceLoadCompleted.Broadcast(TexBuffer.Num(), FName(*this->GetName()));
+
+		TimeAccum = 0.0f;
 	}
 }
 
