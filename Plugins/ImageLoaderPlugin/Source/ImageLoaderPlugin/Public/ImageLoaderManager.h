@@ -15,6 +15,10 @@ class UImageLoaderManager : public UBlueprintFunctionLibrary
 	GENERATED_UCLASS_BODY()
 
 public:
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Image Loader")
+	static void FindFiles(TArray<FString>& FoundFiles, const FString Directory, const FString FileExtension);
+
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Image Loader")
 	static UImageLoaderManager* GetImageLoaderManager();
 

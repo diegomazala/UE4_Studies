@@ -9,7 +9,10 @@
 UImageLoaderManager* UImageLoaderManager::LoaderMngr = nullptr;
 
 
-static TArray<FString> GetAllFilesInDirectory(const FString directory, const bool fullPath = true, const FString onlyFilesStartingWith = TEXT(""),	const FString onlyFilesEndingWith = TEXT(""));
+
+static TArray<FString> GetAllFilesInDirectory(const FString directory, const bool fullPath = true, const FString onlyFilesStartingWith = TEXT(""), const FString onlyFilesEndingWith = TEXT(""));
+
+
 
 UImageLoaderManager::UImageLoaderManager(const FObjectInitializer& ObjectInitializer)// : Super(ObjectInitializer)
 {
@@ -301,3 +304,8 @@ static TArray<FString> GetAllFilesInDirectory(const FString directory, const boo
 	return files;
 }
 
+
+void UImageLoaderManager::FindFiles(TArray<FString>& FoundFiles, const FString Directory, const FString FileExtension)
+{
+	IFileManager::Get().FindFiles(FoundFiles, *Directory, *FileExtension);
+}
