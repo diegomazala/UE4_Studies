@@ -4,6 +4,8 @@
 #include "RenderUtils.h"
 #include "Engine/Texture2D.h"
 
+#include "Runtime/RHI/Public/RHICommandList.h"
+
 #include <exception>
 #include "nv_dds.h"
 
@@ -214,4 +216,36 @@ UTexture2D* UImageLoader::LoadDDSFromDisk(UObject* Outer, const FString& ImagePa
 	}
 }
 
+
+
+
+
+bool UImageLoader::CopyTexture(UTexture2D* SourceTexture2D, UTexture2D* DestTexture2D)
+{
+	if (!SourceTexture2D || !DestTexture2D)
+		return false;
+
+	FTextureResource* SrcTextureResource = SourceTexture2D->Resource;
+	FTextureResource* DstTextureResource = DestTexture2D->Resource;
+	ENQUEUE_RENDER_COMMAND(ResolvePixelData)
+	(
+		[SrcTextureResource, DstTextureResource](FRHICommandListImmediate& RHICmdList)
+		{
+			if (!SrcTextureResource->TextureRHI || !DstTextureResource->TextureRHI)
+			{
+				return false;
+			}
+			
+			FRHICopyTextureInfo CopyInfo;
+
+			GRHICommandList.GetImmediateCommandList().CopyTexture(
+								SrcTextureResource->TextureRHI, 
+								DstTextureResource->TextureRHI,
+								CopyInfo);
+			return true;
+		}
+	);
+
+	return true;
+}
 

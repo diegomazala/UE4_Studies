@@ -41,7 +41,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = ImageLoader, meta = (HidePin = "Outer", DefaultToSelf = "Outer"))
 	static UTexture2D* LoadDDSFromDisk(UObject* Outer, const FString& ImagePath);
-	
+
 
 	/** Helper function to dynamically create a new texture from raw pixel data. */
 	UFUNCTION(BlueprintCallable, Category = ImageLoader, meta = (HidePin = "Outer", DefaultToSelf = "Outer"))
@@ -61,6 +61,9 @@ public:
 		return LoadCompleted;
 	}
 
+
+	UFUNCTION(BlueprintCallable, Category = ImageLoader, meta = (HidePin = "Outer", DefaultToSelf = "Outer"))
+	static bool CopyTexture(UTexture2D* SourceTexture2D, UTexture2D* DestTexture2D);
 
 private:
 	/** Helper function that initiates the loading operation and fires the event when loading is done. */
