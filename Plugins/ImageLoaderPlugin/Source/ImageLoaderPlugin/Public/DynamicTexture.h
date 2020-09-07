@@ -55,6 +55,10 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Dynamic Texture")
     UTexture2D* Texture2D = nullptr;
 
+	UFUNCTION(BlueprintCallable, Category = "Dynamic Texture")
+	bool Load(FString ImagePath);
+
+
 private:
 	
 	bool            Created = false;

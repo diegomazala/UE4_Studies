@@ -256,3 +256,55 @@ void UDynamicTexture::RandomTexture(float Time, int Width, int Height, uint8* Pi
         dst += textureRowPitch;
     }
 }
+
+
+
+
+#include <exception>
+#include "nv_dds.h"
+bool UDynamicTexture::Load(FString ImagePath)
+{
+	nv_dds::CDDSImage image;
+	bool flip_image = false;
+
+	try
+	{
+		image.load(TCHAR_TO_UTF8(*ImagePath), flip_image);
+
+		if (image.get_format_dxt() != nv_dds::DXT1 && image.get_format_dxt() != nv_dds::DXT5)
+		{
+			UE_LOG(LogTemp, Error, TEXT("%Unsupported DXT format: %s"), *ImagePath);
+			return false;
+		}
+
+	}
+	catch (const std::exception& ex)
+	{
+		UE_LOG(LogTemp, Error, TEXT("%s Failed to load nv_dds image file: %s"), ex.what(), *ImagePath);
+		return false;
+	}
+
+	int bpp = (image.get_format_dxt() == nv_dds::DXT5) ? 4 : 3;
+
+	CreateResource(image.get_width(), image.get_height(), (image.get_format_dxt() == nv_dds::DXT5) ? EPixelFormat::PF_DXT5 : EPixelFormat::PF_DXT1);
+
+
+	if (Created)
+	{
+		
+		UpdateTextureRegionsParams params = {
+			/*Texture = */ Texture2D,
+			/*MipIndex = */ 0,
+			/*NumRegions = */ 1,
+			/*Regions = */ &UpdateTextureRegion,
+			/*SrcPitch = */ static_cast<uint32>(image.get_width() * sizeof(uint8) * bpp),
+			/*SrcBpp = */ sizeof(uint8) * bpp,
+			/*SrcData = */ image,
+			/*FreeData = */ false,
+		};
+		UpdateTextureRegions(params, Uploaded);
+		return true;
+	}
+
+	return false;
+}
