@@ -223,16 +223,27 @@ UTexture2D* UImageLoader::LoadDDSFromDisk(UObject* Outer, const FString& ImagePa
 bool UImageLoader::CopyTexture(UTexture2D* SourceTexture2D, UTexture2D* DestTexture2D)
 {
 	if (!SourceTexture2D || !DestTexture2D)
+	{
+		UE_LOG(LogTemp, Error, TEXT("Failed: (!SourceTexture2D || !DestTexture2D)"));
 		return false;
+	}
 
 	FTextureResource* SrcTextureResource = SourceTexture2D->Resource;
 	FTextureResource* DstTextureResource = DestTexture2D->Resource;
+
+	if (!SrcTextureResource || !DstTextureResource)
+	{
+		UE_LOG(LogTemp, Error, TEXT("Failed: (!SrcTextureResource || !DstTextureResource)"));
+		return false;
+	}
+
 	ENQUEUE_RENDER_COMMAND(ResolvePixelData)
 	(
 		[SrcTextureResource, DstTextureResource](FRHICommandListImmediate& RHICmdList)
 		{
 			if (!SrcTextureResource->TextureRHI || !DstTextureResource->TextureRHI)
 			{
+				UE_LOG(LogTemp, Error, TEXT("Failed: (!SrcTextureResource->TextureRHI || !DstTextureResource->TextureRHI)"));
 				return false;
 			}
 			
@@ -242,6 +253,7 @@ bool UImageLoader::CopyTexture(UTexture2D* SourceTexture2D, UTexture2D* DestText
 								SrcTextureResource->TextureRHI, 
 								DstTextureResource->TextureRHI,
 								CopyInfo);
+
 			return true;
 		}
 	);
