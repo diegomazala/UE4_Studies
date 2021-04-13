@@ -43,7 +43,9 @@ public class LicenseSystemPlugin : ModuleRules
 				"Engine",
 				"Slate",
 				"SlateCore",
-				"PlatformCryptoOpenSSL"
+				"PlatformCryptoOpenSSL",
+				"Json", 
+				"JsonUtilities"
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);

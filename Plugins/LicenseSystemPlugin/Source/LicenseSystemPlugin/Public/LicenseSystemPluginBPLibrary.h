@@ -32,5 +32,9 @@ public:
 	static float LicenseSystemPluginSampleFunction(float Param);
 
 	UFUNCTION(BlueprintCallable, Category = "License System")
-	static bool LoadLicense(FString LicenseFilename, FString KeyFilename);
+	static bool IsLicenseValid(FString LicenseFilename, FString KeyFilename);
+
+	UFUNCTION(BlueprintCallable)
+	static FString ConvertBytesToString(const TArray<uint8>& In);
 };
+
